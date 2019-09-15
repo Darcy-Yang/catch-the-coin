@@ -1,0 +1,70 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100vw;
+  height: 100vh;
+}
+
+#chess {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+#chess .row {
+  display: flex;
+  margin: 2px 0;
+}
+
+#chess .offset {
+  position: relative;
+  left: 30px;
+}
+
+#chess .row .block {
+  margin: 0 2px;
+  width: 56px;
+  height: 56px;
+
+  border: 1px solid rgba(0, 0, 0, 0.45);
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+#chess .row .edge {
+  background-color: rgba(255, 0, 0, 0.32);
+}
+
+#chess .row .wall {
+  background-color: rgba(61, 168, 245, 0.61);
+}
+
+#chess .coin {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+
+  text-align: center;
+  line-height: 62px;
+
+  font-size: 18px;
+  font-family: fantasy;
+  color: rgba(0, 0, 0, 0.65);
+
+  background-color: orange;
+  border-radius: 50%;
+  z-index: 1;
+
+  transition: all .3s;
+}
+
+@keyframes blink {
+  0% {
+    background-color: rgba(255, 165, 0, 0.6);
+  }
+  100% {
+    background-color: inherit;
+  }
+}

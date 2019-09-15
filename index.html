@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<header>
+  <title>Catch the coin</title>
+  <link rel="stylesheet" type="text/css" href="./index.css">
+</header>
+<body>
+  <div class="container">
+    <div id="chess"></div>
+  </div>
+  <script src="./catch_coin.js"></script>
+  <script>
+      const target = document.getElementById('chess')
+      const coin = document.createElement('div')
+      const randomPoints = getRandomPoints()
+
+      const status = {}
+      let coinPoint = [5,5]
+      // 缓存 DOM 节点
+      let blockDOMs = null
+
+      coin.className = 'coin'
+      coin.style.left = `${coinPoint[0] * 62 + 33}px`
+      coin.style.bottom = `${coinPoint[1] * 62 + 3}px`
+      coin.innerText = '$100'
+
+      target.appendChild(coin)
+
+      for (let i = 10; i >= 0; i --) {
+        // TODO: 节流
+        const row = document.createElement('div')
+        row.className = i % 2 ? 'row offset' : 'row'
+        for (let j = 0; j < 11; j ++) {
+          const div = document.createElement('div')
+          const y = i
+          const x = j
+          const pointStr = `${x},${y}`
+
+          div.className = 'block'
+
+          div.addEventListener('click', () => {
+            div.className = 'block wall'
+            status[pointStr] = { isWall: true, isEdge: false }
+            const { nextPos, routes } = getSolution(coinPoint)
+
+            if (!nextPos) {
+              console.info('You get the coin!')
+              return
+            }
+
+            for (const route of routes) {
+              const splitArr = route.split(',')
+              const x = +splitArr[0]
+              const y = +splitArr[1]
+              const order = x + (10 - y) * 10 + 10 - y
+              blockDOMs[order].style.animation = 'blink .3s infinite'
+              setTimeout(() => blockDOMs[order].style.animation = '', 600)
+            }
+            const split = nextPos.split(',')
+            const nextX = +split[0]
+            const nextY = +split[1]
+            // 奇偶行 水平 偏移量不同
+            const offset = (nextY % 2) ? 33 : 3
+
+            coinPoint = [nextX, nextY]
+
+            setTimeout(() => {
+              coin.style.left = `${nextX * 62 + offset}px`
+              coin.style.bottom = `${nextY * 62 + 3}px`
+            }, 500)
+
+            // 硬币已逃至边缘，游戏结束 🎮
+            if (status[`${nextX},${nextY}`].isEdge) {
+              setTimeout(() => {
+                coin.style.transition = 'bottom 2s, transform 3s'
+                coin.style.bottom = '-200px'
+                coin.style.transform = 'rotate(1800deg)'
+              }, 800)
+              console.info('Coin escaped!')
+              return
+            }
+          })
+
+          status[pointStr] = { isWall: false, isEdge: false }
+          if (x === 0 || x === 10 || y === 0 || y === 10) {
+            status[pointStr] = { isWall: false, isEdge: true }
+          }
+
+          if (randomPoints.includes(pointStr)) {
+            div.className = 'block wall'
+            status[pointStr] = { isWall: true, isEdge: false }
+          }
+
+          row.appendChild(div)
+        }
+        target.appendChild(row)
+        blockDOMs = document.getElementsByClassName('block')
+      }
+
+    </script>
+</body>
